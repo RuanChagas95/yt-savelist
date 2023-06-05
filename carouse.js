@@ -1,6 +1,8 @@
+
 const updateurl = () => (url = document.URL)
-// let url = document.URL
-const url = 'https://www.youtube.com/'
+let carouselActive = false
+let url = document.URL
+// const url = 'https://www.youtube.com/'
 // const url = 'https://www.youtube.com/watch?v=3B_qXITddHUlist=PLzgiudKoJnl9URMe27pokxsiWVvUa3lF'
 const widthChagas = 337 + 'px'
 const heightChagas = 290 + 'px' 
@@ -10,7 +12,7 @@ function createDivCarousel() {
     const div = document.createElement('div')
     div.id = 'save-list'
     div.classList.add('carousel', 'carousel-dark', 'slide')
-    /* div.setAttribute('data-bs-ride', 'carousel') */
+    div.setAttribute('data-bs-ride', 'carousel')
     
     return div
 }
@@ -58,13 +60,13 @@ function createCarouselIndicators(info) {
     return div
 }
 
-function createCarouselItem(info, repeat = 0, items = []) {
-    const item = info[repeat]
+function createCarouselItem(info, index = 0, items = []) {
+    const item = info[index]
     const maxRepeat = info.length - 1
     
     const element = document.createElement('div')
-    element.setAttribute('data-bs-interval', item.interval)
-    element.className = info.active === repeat ? 'active' : ''
+    element.setAttribute('data-bs-interval', 30000)
+    element.className = info.active === index ? 'active' : ''
     element.classList.add('carousel-item')
     element.focusable = false
     element.style.height = heightChagas
@@ -72,9 +74,15 @@ function createCarouselItem(info, repeat = 0, items = []) {
 
     const div = document.createElement('div')
     element.appendChild(div)
-    div.style.background = window.getComputedStyle(document.body).backgroundColor
-    const invertedColor = getComputedStyle(document.querySelector('yt-chip-cloud-chip-renderer')).backgroundColor
-    div.style.backgroundColor = invertedColor === 'rgb(241, 241, 241)' ?  '#272727' : '#f2f2f2'
+    const invertedColorElement = document.querySelector('yt-chip-cloud-chip-renderer')
+    let color
+    if (invertedColorElement){
+        color = getComputedStyle(invertedColorElement).style.backgroundColor === 'rgb(241, 241, 241)' ? '#272727' : '#f2f2f2'
+        
+    } else {
+        color = '#f2f2f2'
+    }
+    div.style.backgroundColor = color
     div.style.display = 'flex'
     div.style.backgroundColor = 
     div.style.width = widthChagas
@@ -89,8 +97,8 @@ function createCarouselItem(info, repeat = 0, items = []) {
     
     
     const title = document.createElement('a')
-    title.href = info[repeat].links.url
-    title.innerText = info[repeat].title
+    title.href = item.links.url
+    title.innerText = item.title
     title.style = `color: var(--yt-spec-text-primary);
     font-family: "Roboto","Arial",sans-serif;
     font-size: 1.6rem;
@@ -111,24 +119,28 @@ function createCarouselItem(info, repeat = 0, items = []) {
     title.style.height = '100%'
     title.style.alignItems = 'center'
     title.style.className = 'style-scope ytd-rich-grid-media'
+    title.style.textDecoration = 'none'
     div.appendChild(title)
 
     const link = document.createElement('a')
-    link.href = info[repeat].links.url
-    const img = document.createElement('img')
-    link.appendChild(img)
-    img.src = info[repeat]['imgSrc'] ? info[repeat].imgSrc : createSvg(322, 181)
-    img.alt = 'thumbnail'
-    img.style.borderRadius = '10px'
-    img.style.width = '100%'
-    link.style.width = '100%'
-    // img.style.border = 'solid'
-    
+    link.href = item.links.url
+    if (item.imgSrc){
+        const img = document.createElement('img')
+        img.src = item.imgSrc
+        img.alt = 'thumbnail'
+        img.style.borderRadius = '10px'
+        img.style.width = '100%'
+        link.style.width = '100%'
+        link.appendChild(img)
+    } else {        
+        link.appendChild(createSvg(322, 181))
+    }
+      
     div.appendChild(link)
     items.push(element)
   
-    if (repeat < maxRepeat) {
-        return createCarouselItem(info, repeat + 1, items)
+    if (index < maxRepeat) {
+        return createCarouselItem(info, index + 1, items)
     }
   
     return items
@@ -321,6 +333,9 @@ function verifyList() {
 }
 
 function main() {
+    if (carouselActive){
+        return true
+    }
     const cards = loadCards()
     if (!url.includes('watch')){
         if (cards){
@@ -336,7 +351,9 @@ function main() {
         }
     }
 }
-function  init() {
+function init() {
     window.requestAnimationFrame(waitLoadYT)
 }
 init()
+window.addEventListener('popstate', main)
+  
