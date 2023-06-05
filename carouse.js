@@ -257,4 +257,5 @@ function checkResources() {
 function  init() {
     window.requestAnimationFrame(checkResources)
 }
+init()
 

@@ -3,7 +3,7 @@ const url = 'https://www.youtube.com/watch?v=3B_qXITddHU&list=PLzgiudKkoJnl9URMe
 // const lists;
 window.onload = () => {
     if (url.includes('list=')){
-        return /* save list */
+        return createNewCard()
     }
     if (url.includes('watch')){
         return true
@@ -22,17 +22,20 @@ function captureLinks(){
 }
 
 function captureTitle(){
-    const title = document.querySelector('h3 yt-formatted-string[title] a').innerText
+    const title = document.querySelector('h3 yt-formatted-string[title] a')
     if (title){
-        return title
+        return title.innerText
     }
-    return 'Adicione um título'
+    return 'nova lista'
 }
-function saveLists (newList){
-    /* adicionar listas ao localStorage */
+function saveCards (newCard){
+    const cards = loadCards() || []
+    cards.push(newCard)
+    localStorage.setItem('saveCards', JSON.stringify(cards))
 }
-function loadLists (){
+function loadCards (){
     /* retorna objeto com informação dos cards */
+    return false
 }
 function captureImage() {
     /* retorna link da thumnail */
@@ -42,5 +45,6 @@ function createNewCard(){
     card.links = captureLinks()
     card.title = captureTitle()
     card.imgSrc = captureImage()
-    return card
+    saveCards(card)
 }
+
