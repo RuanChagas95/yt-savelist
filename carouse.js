@@ -1,17 +1,7 @@
-const infoItems = [
-    {
-        title: 'Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio',
-        class: '',
-        v: 'KnlRCAaUEig',
-        imgSrc: 'https://i.ytimg.com/vi/tnlEJRFCFEs/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBN6kyXj0PbUaSLaLHWBZiY3DnREg'
-    },
-    {
-        title: 'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in',
-        class: 'active',
-        v: 'KnlRCAaUEig',
-        imgSrc: 'https://cdn.cloudflare.steamstatic.com/steam/apps/108600/ss_d4a0f78dc94273c7f0eedc186569efc091387066.116x65.jpg?t=1679306018'
-    }
-]
+const updateurl = () => (url = document.URL)
+// let url = document.URL
+const url = 'https://www.youtube.com/'
+// const url = 'https://www.youtube.com/watch?v=3B_qXITddHUlist=PLzgiudKoJnl9URMe27pokxsiWVvUa3lF'
 const widthChagas = 337 + 'px'
 const heightChagas = 290 + 'px' 
 // Chama a função para adicionar os elementos ao <head>
@@ -24,7 +14,27 @@ function createDivCarousel() {
     
     return div
 }
+function createSvg(width, heigth, inverter = false){
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    svg.setAttribute('width', '16')
+    svg.setAttribute('height', '16')
+    svg.setAttribute('fill', 'currentColor')
+    svg.setAttribute('class', 'bi bi-youtube')
+    svg.setAttribute('viewBox', '0 0 16 16')
 
+    // Cria o elemento 'path' e define o atributo 'd'
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    path.setAttribute('d', 'M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.010.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z')
+    svg.appendChild(path)
+    //inverte para voltar
+    svg.style.width = width + 'px'
+    svg.style.height = heigth +'px'
+    if (inverter){
+        svg.style.transform = 'scale(-1, 1)'
+    }
+    return svg
+}
 function createCarouselIndicators(info) {
     const div = document.createElement('div')
     div.classList.add('carousel-indicators')
@@ -54,7 +64,7 @@ function createCarouselItem(info, repeat = 0, items = []) {
     
     const element = document.createElement('div')
     element.setAttribute('data-bs-interval', item.interval)
-    element.className = item.class
+    element.className = info.active === repeat ? 'active' : ''
     element.classList.add('carousel-item')
     element.focusable = false
     element.style.height = heightChagas
@@ -62,8 +72,11 @@ function createCarouselItem(info, repeat = 0, items = []) {
 
     const div = document.createElement('div')
     element.appendChild(div)
+    div.style.background = window.getComputedStyle(document.body).backgroundColor
+    const invertedColor = getComputedStyle(document.querySelector('yt-chip-cloud-chip-renderer')).backgroundColor
+    div.style.backgroundColor = invertedColor === 'rgb(241, 241, 241)' ?  '#272727' : '#f2f2f2'
     div.style.display = 'flex'
-    div.style.backgroundColor = '#e9e3e3'
+    div.style.backgroundColor = 
     div.style.width = widthChagas
     div.style.height = heightChagas
     div.style.flexDirection = 'column'
@@ -73,9 +86,10 @@ function createCarouselItem(info, repeat = 0, items = []) {
     div.style.borderRadius = '10px'
     div.style.padding = '4px'
     div.style.textAlign = 'center'
-
+    
     
     const title = document.createElement('a')
+    title.href = info[repeat].links.url
     title.innerText = info[repeat].title
     title.style = `color: var(--yt-spec-text-primary);
     font-family: "Roboto","Arial",sans-serif;
@@ -99,15 +113,18 @@ function createCarouselItem(info, repeat = 0, items = []) {
     title.style.className = 'style-scope ytd-rich-grid-media'
     div.appendChild(title)
 
+    const link = document.createElement('a')
+    link.href = info[repeat].links.url
     const img = document.createElement('img')
-    img.src = info[repeat]['imgSrc'] ? info[repeat].imgSrc : 'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffavpng.com%2Fpng_view%2Fyoutube-youtube-logo-image-png%2FvyXaLECX&psig=AOvVaw1_LeOC1xSDrBocL-uxT02r&ust=1686050821370000&source=images&cd=vfe&ved=0CA4QjRxqFwoTCKCcrvWCrP8CFQAAAAAdAAAAABAD'
+    link.appendChild(img)
+    img.src = info[repeat]['imgSrc'] ? info[repeat].imgSrc : createSvg(322, 181)
     img.alt = 'thumbnail'
-    img.style.width = '100%'
-    img.style.bottom = '0'
-    img.style.border = 'solid'
     img.style.borderRadius = '10px'
-    div.appendChild(img)
-
+    img.style.width = '100%'
+    link.style.width = '100%'
+    // img.style.border = 'solid'
+    
+    div.appendChild(link)
     items.push(element)
   
     if (repeat < maxRepeat) {
@@ -139,26 +156,10 @@ function createCarouselControls() {
     prevButton.style.height = 'fit-content'
     prevButton.style.marginTop = '160px'
   
-    const prevIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    prevIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    prevIcon.setAttribute('width', '16')
-    prevIcon.setAttribute('height', '16')
-    prevIcon.setAttribute('fill', 'currentColor')
-    prevIcon.setAttribute('class', 'bi bi-youtube')
-    prevIcon.setAttribute('viewBox', '0 0 16 16')
-
-    // Cria o elemento 'path' e define o atributo 'd'
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path.setAttribute('d', 'M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.010.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z')
-
+    
+    const prevIcon = createSvg(40,40, true)
     // Adiciona o elemento 'path' ao elemento SVG
-    prevIcon.appendChild(path)
-    //inverte para voltar
-    prevIcon.style.width = '40px'
-    prevIcon.style.height = '40px'
-    const nextIcon = prevIcon.cloneNode(true)
-   
-    prevIcon.style.transform = 'scale(-1, 1)'
+  
 
     // Adiciona o elemento SVG ao elemento pai
     prevButton.appendChild(prevIcon)
@@ -178,6 +179,7 @@ function createCarouselControls() {
     nextButton.style.height = 'fit-content'
     nextButton.style.marginTop = '160px'
     
+    const nextIcon = createSvg(40,40)
     nextButton.appendChild(nextIcon)
   
     const nextLabel = document.createElement('span')
@@ -207,6 +209,8 @@ function initCarousel(cards){
     chagas.style.position = 'fixed'
     chagas.style.right = '10vw'
     chagas.style.bottom = '0'
+    
+
 
     const head = document.createElement('header')
     head.appendChild(importCSS())
@@ -239,27 +243,24 @@ function importCSS() {
 
     return linkElement
 }
-
-function checkResources() {
+function importBootstrapScript() {
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
+    document.body.appendChild(script)
+}
+function waitLoadYT() {
     if (document.readyState === 'complete') {
-        // Recursos carregados, execute o restante do código
-        const script = document.createElement('script')
-        script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
-        document.body.appendChild(script)
-
-        const body = document.querySelector('body')
-        body.appendChild(initCarousel())
+        // Recursos carregados, execute o restante do código        
+        importBootstrapScript()
+        main()
     } else {
         // Aguarde o próximo quadro de animação
-        window.requestAnimationFrame(checkResources)
+        window.requestAnimationFrame(waitLoadYT)
     }
 }
-function  init() {
-    window.requestAnimationFrame(checkResources)
-}
 
-/* const url = document.URL */
-const url = 'https://www.youtube.com/watch?v=3B_qXITddHU&list=PLzgiudKkoJnl9URMe27pokxsiWVvUa3lF'
+
+
 // const lists;
 
 function captureLinks(){
@@ -281,15 +282,24 @@ function captureTitle(){
 }
 function saveCards (newCard){
     const cards = loadCards() || []
+    const active = cards.length
     cards.push(newCard)
     localStorage.setItem('saveCards', JSON.stringify(cards))
+    localStorage.setItem('active', JSON.stringify(active))
+    
 }
 function loadCards (){
     const cards = JSON.parse(localStorage.getItem('saveCards'))
+    if (cards) {
+        cards.active = JSON.parse(localStorage.getItem('active'))
+    }
     return cards
 }
 function captureImage() {
-    /* retorna link da thumnail */
+    const img = document.querySelector('#thumbnail > yt-image > img')
+    if (img){
+        return img.src
+    }
 }
 function createNewCard(){
     const card = {}
@@ -300,6 +310,9 @@ function createNewCard(){
 }
 function verifyList() {
     const cards = loadCards()
+    if (!cards){
+        return undefined
+    }
     for (let index = 0; index < cards.length; index += 1){
         if (cards[index].links.url === url){
             return index
@@ -310,8 +323,7 @@ function verifyList() {
 function main() {
     const cards = loadCards()
     if (!url.includes('watch')){
-        if (typeof cards === 'object'){
-            /*   importBootstrap() */
+        if (cards){
             const body = document.querySelector('body')
             body.appendChild(initCarousel(cards))
             return 'init youtube lists'
@@ -324,12 +336,7 @@ function main() {
         }
     }
 }
-function waitLoadYT() {
-    if (document.readyState === 'complete') {
-        main()        
-    } else {
-        window.requestAnimationFrame(waitLoadYT)
-    }
+function  init() {
+    window.requestAnimationFrame(waitLoadYT)
 }
 init()
-/* waitLoadYT() */
