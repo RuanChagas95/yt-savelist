@@ -3,8 +3,13 @@ const url = 'https://www.youtube.com/watch?v=3B_qXITddHU&list=PLzgiudKkoJnl9URMe
 // const lists;
 window.onload = () => {
     if (url.includes('list=')){
-        //nada
+        return /* save list */
     }
+    if (url.includes('watch')){
+        return true
+    }
+    /* exibir listas */
+    
 }
 function captureLinks(){
     let urlClear = url.replace(/.+watch\?v=/, '')
@@ -20,6 +25,14 @@ function captureTitle(){
     if (title){
         return title
     }
-    return 'Título não encontrado'
+    return 'Adicione um título'
 }
-
+function saveLists (newList){
+    /* adicionar listas ao localStorage */
+}
+function loadLists (){
+    /* retorna objeto com informação dos cards */
+}
+function createNewList(){
+    /* cria objeto com informações do novo card */
+}
