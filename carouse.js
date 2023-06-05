@@ -1,14 +1,26 @@
-
+const infoItems = [
+    {
+        title: 'Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio',
+        class: '',
+        v: 'KnlRCAaUEig',
+        imgSrc: 'https://i.ytimg.com/vi/tnlEJRFCFEs/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBN6kyXj0PbUaSLaLHWBZiY3DnREg'
+    },
+    {
+        title: 'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in',
+        class: 'active',
+        v: 'KnlRCAaUEig',
+        imgSrc: 'https://cdn.cloudflare.steamstatic.com/steam/apps/108600/ss_d4a0f78dc94273c7f0eedc186569efc091387066.116x65.jpg?t=1679306018'
+    }
+]
 const widthChagas = 337 + 'px'
 const heightChagas = 290 + 'px' 
 // Chama a função para adicionar os elementos ao <head>
 
-// Chame a função para importar e aplicar o CSS para #Chagas
 function createDivCarousel() {
     const div = document.createElement('div')
     div.id = 'save-list'
     div.classList.add('carousel', 'carousel-dark', 'slide')
-    // div.setAttribute('data-bs-ride', 'carousel')
+    /* div.setAttribute('data-bs-ride', 'carousel') */
     
     return div
 }
@@ -25,7 +37,7 @@ function createCarouselIndicators(info) {
         button.dataset.bsSlideTo = i
         button.setAttribute('aria-label', 'video')
   
-        if (info[i].class === 'active') {
+        if (info.active === i) {
             button.classList.add('active')
             button.setAttribute('aria-current', 'true')
         }
@@ -35,20 +47,6 @@ function createCarouselIndicators(info) {
   
     return div
 }
-const infoItems = [
-    {
-        title: 'Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio',
-        class: '',
-        v: 'KnlRCAaUEig',
-        imgSrc: 'https://i.ytimg.com/vi/tnlEJRFCFEs/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBN6kyXj0PbUaSLaLHWBZiY3DnREg'
-    },
-    {
-        title: 'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in',
-        class: 'active',
-        v: 'KnlRCAaUEig',
-        imgSrc: 'https://cdn.cloudflare.steamstatic.com/steam/apps/108600/ss_d4a0f78dc94273c7f0eedc186569efc091387066.116x65.jpg?t=1679306018'
-    }
-]
 
 function createCarouselItem(info, repeat = 0, items = []) {
     const item = info[repeat]
@@ -59,7 +57,7 @@ function createCarouselItem(info, repeat = 0, items = []) {
     element.className = item.class
     element.classList.add('carousel-item')
     element.focusable = false
-    element.style.height = heightChagas //test
+    element.style.height = heightChagas
     element.style.width = '100%'
 
     const div = document.createElement('div')
@@ -102,7 +100,7 @@ function createCarouselItem(info, repeat = 0, items = []) {
     div.appendChild(title)
 
     const img = document.createElement('img')
-    img.src = info[repeat].imgSrc
+    img.src = info[repeat]['imgSrc'] ? info[repeat].imgSrc : 'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffavpng.com%2Fpng_view%2Fyoutube-youtube-logo-image-png%2FvyXaLECX&psig=AOvVaw1_LeOC1xSDrBocL-uxT02r&ust=1686050821370000&source=images&cd=vfe&ved=0CA4QjRxqFwoTCKCcrvWCrP8CFQAAAAAdAAAAABAD'
     img.alt = 'thumbnail'
     img.style.width = '100%'
     img.style.bottom = '0'
@@ -117,8 +115,7 @@ function createCarouselItem(info, repeat = 0, items = []) {
     }
   
     return items
-}     
-
+}
       
 function createInner(infoItems){
     
@@ -132,6 +129,7 @@ function createInner(infoItems){
     })
     return divCarouselInner
 }
+
 function createCarouselControls() {
     const prevButton = document.createElement('button')
     prevButton.className = 'carousel-control-prev'
@@ -189,12 +187,13 @@ function createCarouselControls() {
   
     return [prevButton, nextButton]
 }
-function initCarousel(){
+
+function initCarousel(cards){
 
     const divCarousel = createDivCarousel()
-    const indicators = createCarouselIndicators(infoItems)
+    const indicators = createCarouselIndicators(cards)
     divCarousel.appendChild(indicators)
-    divCarousel.appendChild(createInner(infoItems))
+    divCarousel.appendChild(createInner(cards))
     const carouselControls = createCarouselControls()
     carouselControls.forEach((control) => {
         divCarousel.appendChild(control)
@@ -214,6 +213,7 @@ function initCarousel(){
     chagas.appendChild(head)
     return chagas
 }
+
 function fixeStyles(querySelector) {
     const element = document.querySelector(querySelector)
     const computedStyles = getComputedStyle(element)
@@ -257,5 +257,79 @@ function checkResources() {
 function  init() {
     window.requestAnimationFrame(checkResources)
 }
-init()
 
+/* const url = document.URL */
+const url = 'https://www.youtube.com/watch?v=3B_qXITddHU&list=PLzgiudKkoJnl9URMe27pokxsiWVvUa3lF'
+// const lists;
+
+function captureLinks(){
+    let urlClear = url.replace(/.+watch\?v=/, '')
+    const links = {
+        list: urlClear.replace(/.+list=/, ''),
+        video: urlClear.replace(/list=.+/, ''),
+        url: url
+    }
+    return links
+}
+
+function captureTitle(){
+    const title = document.querySelector('h3 yt-formatted-string[title] a')
+    if (title){
+        return title.innerText
+    }
+    return 'nova lista'
+}
+function saveCards (newCard){
+    const cards = loadCards() || []
+    cards.push(newCard)
+    localStorage.setItem('saveCards', JSON.stringify(cards))
+}
+function loadCards (){
+    const cards = JSON.parse(localStorage.getItem('saveCards'))
+    return cards
+}
+function captureImage() {
+    /* retorna link da thumnail */
+}
+function createNewCard(){
+    const card = {}
+    card.links = captureLinks()
+    card.title = captureTitle()
+    card.imgSrc = captureImage()
+    saveCards(card)
+}
+function verifyList() {
+    const cards = loadCards()
+    for (let index = 0; index < cards.length; index += 1){
+        if (cards[index].links.url === url){
+            return index
+        }
+    }
+}
+
+function main() {
+    const cards = loadCards()
+    if (!url.includes('watch')){
+        if (typeof cards === 'object'){
+            /*   importBootstrap() */
+            const body = document.querySelector('body')
+            body.appendChild(initCarousel(cards))
+            return 'init youtube lists'
+        }
+    }
+    if (url.includes('list=')){
+        const cardIndex = verifyList()
+        if (!Number.isInteger(cardIndex)) {
+            createNewCard()
+        }
+    }
+}
+function waitLoadYT() {
+    if (document.readyState === 'complete') {
+        main()        
+    } else {
+        window.requestAnimationFrame(waitLoadYT)
+    }
+}
+init()
+/* waitLoadYT() */

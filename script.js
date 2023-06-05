@@ -1,16 +1,7 @@
-// const url = document.URL
+/* const url = document.URL */
 const url = 'https://www.youtube.com/watch?v=3B_qXITddHU&list=PLzgiudKkoJnl9URMe27pokxsiWVvUa3lF'
 // const lists;
-window.onload = () => {
-    if (url.includes('list=')){
-        return createNewCard()
-    }
-    if (url.includes('watch')){
-        return true
-    }
-    /* exibir listas */
-    
-}
+
 function captureLinks(){
     let urlClear = url.replace(/.+watch\?v=/, '')
     const links = {
@@ -34,8 +25,8 @@ function saveCards (newCard){
     localStorage.setItem('saveCards', JSON.stringify(cards))
 }
 function loadCards (){
-    /* retorna objeto com informação dos cards */
-    return false
+    const cards = JSON.parse(localStorage.getItem('saveCards'))
+    return cards
 }
 function captureImage() {
     /* retorna link da thumnail */
@@ -47,4 +38,32 @@ function createNewCard(){
     card.imgSrc = captureImage()
     saveCards(card)
 }
+function verifyList() {
+    const cards = loadCards()
+    for (let index = 0; index < cards.length; index += 1){
+        if (cards[index].links.url === url){
+            return index
+        }
+    }
+}
 
+function main() {
+    if (!url.includes('watch')){
+        const body = document.querySelector('body')
+        body.appendChild(initCarousel())
+        return 'init youtube lists'
+    }
+    if (url.includes('list=')){
+        const cardIndex = verifyList()
+        if (!Number.isInteger(cardIndex)) {
+            createNewCard()
+        }
+    }
+}
+function waitLoadYT() {
+    if (document.readyState === 'complete') {
+        main()        
+    } else {
+        window.requestAnimationFrame(waitLoadYT)
+    }
+}
