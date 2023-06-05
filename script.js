@@ -15,7 +15,8 @@ function captureLinks(){
     let urlClear = url.replace(/.+watch\?v=/, '')
     const links = {
         list: urlClear.replace(/.+list=/, ''),
-        video: urlClear.replace(/list=.+/, '')
+        video: urlClear.replace(/list=.+/, ''),
+        url: url
     }
     return links
 }
@@ -33,6 +34,13 @@ function saveLists (newList){
 function loadLists (){
     /* retorna objeto com informação dos cards */
 }
-function createNewList(){
-    /* cria objeto com informações do novo card */
+function captureImage() {
+    /* retorna link da thumnail */
+}
+function createNewCard(){
+    const card = {}
+    card.links = captureLinks()
+    card.title = captureTitle()
+    card.imgSrc = captureImage()
+    return card
 }

@@ -37,13 +37,13 @@ function createCarouselIndicators(info) {
 }
 const infoItems = [
     {
-        Title: 'Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio',
+        title: 'Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio',
         class: '',
         v: 'KnlRCAaUEig',
         imgSrc: 'https://i.ytimg.com/vi/tnlEJRFCFEs/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBN6kyXj0PbUaSLaLHWBZiY3DnREg'
     },
     {
-        Title: 'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in',
+        title: 'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in',
         class: 'active',
         v: 'KnlRCAaUEig',
         imgSrc: 'https://cdn.cloudflare.steamstatic.com/steam/apps/108600/ss_d4a0f78dc94273c7f0eedc186569efc091387066.116x65.jpg?t=1679306018'
@@ -78,7 +78,7 @@ function createCarouselItem(info, repeat = 0, items = []) {
 
     
     const title = document.createElement('a')
-    title.innerText = info[repeat].Title
+    title.innerText = info[repeat].title
     title.style = `color: var(--yt-spec-text-primary);
     font-family: "Roboto","Arial",sans-serif;
     font-size: 1.6rem;
