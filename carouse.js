@@ -1,11 +1,10 @@
-
-const updateurl = () => (url = document.URL)
 let carouselActive = false
 let url = document.URL
-// const url = 'https://www.youtube.com/'
-// const url = 'https://www.youtube.com/watch?v=3B_qXITddHUlist=PLzgiudKoJnl9URMe27pokxsiWVvUa3lF'
+let links
+let times = 0
+// const url = 'https://www.youtube.com/watch?v=3B_qXITddHUlist=PLzgiudol9RM27oksiWvUalF'
 const widthChagas = 337 + 'px'
-const heightChagas = 290 + 'px' 
+const heightChagas = 290 + 'px'
 // Chama a função para adicionar os elementos ao <head>
 
 function createDivCarousel() {
@@ -13,7 +12,7 @@ function createDivCarousel() {
     div.id = 'save-list'
     div.classList.add('carousel', 'carousel-dark', 'slide')
     div.setAttribute('data-bs-ride', 'carousel')
-    
+
     return div
 }
 function createSvg(width, heigth, inverter = false){
@@ -41,31 +40,31 @@ function createCarouselIndicators(info) {
     const div = document.createElement('div')
     div.classList.add('carousel-indicators')
     div.style.marginBottom = '0'
-  
+
     for (let i = 0; i < info.length; i++) {
         const button = document.createElement('button')
         button.type = 'button'
         button.dataset.bsTarget = '#save-list'
         button.dataset.bsSlideTo = i
         button.setAttribute('aria-label', 'video')
-  
+
         if (info.active === i) {
             button.classList.add('active')
             button.setAttribute('aria-current', 'true')
         }
-  
+
         div.appendChild(button)
     }
-  
+
     return div
 }
 
 function createCarouselItem(info, index = 0, items = []) {
     const item = info[index]
     const maxRepeat = info.length - 1
-    
+
     const element = document.createElement('div')
-    element.setAttribute('data-bs-interval', 30000)
+    element.setAttribute('data-bs-interval', 3000)
     element.className = info.active === index ? 'active' : ''
     element.classList.add('carousel-item')
     element.focusable = false
@@ -78,13 +77,11 @@ function createCarouselItem(info, index = 0, items = []) {
     let color
     if (invertedColorElement){
         color = getComputedStyle(invertedColorElement).style.backgroundColor === 'rgb(241, 241, 241)' ? '#272727' : '#f2f2f2'
-        
     } else {
         color = '#f2f2f2'
     }
     div.style.backgroundColor = color
     div.style.display = 'flex'
-    div.style.backgroundColor = 
     div.style.width = widthChagas
     div.style.height = heightChagas
     div.style.flexDirection = 'column'
@@ -94,8 +91,7 @@ function createCarouselItem(info, index = 0, items = []) {
     div.style.borderRadius = '10px'
     div.style.padding = '4px'
     div.style.textAlign = 'center'
-    
-    
+
     const title = document.createElement('a')
     title.href = item.links.url
     title.innerText = item.title
@@ -132,29 +128,29 @@ function createCarouselItem(info, index = 0, items = []) {
         img.style.width = '100%'
         link.style.width = '100%'
         link.appendChild(img)
-    } else {        
+    } else {
         link.appendChild(createSvg(322, 181))
     }
-      
+
     div.appendChild(link)
     items.push(element)
-  
+
     if (index < maxRepeat) {
         return createCarouselItem(info, index + 1, items)
     }
-  
+
     return items
 }
-      
+
 function createInner(infoItems){
-    
+
     const divCarouselInner = document.createElement('div')
     divCarouselInner.classList.add('carousel-inner')
-    divCarouselInner.style.width = 'fit-content' 
+    divCarouselInner.style.width = 'fit-content'
 
     createCarouselItem(infoItems).forEach(element => {
         divCarouselInner.appendChild(element)
-        
+
     })
     return divCarouselInner
 }
@@ -167,11 +163,11 @@ function createCarouselControls() {
     prevButton.dataset.bsSlide = 'prev'
     prevButton.style.height = 'fit-content'
     prevButton.style.marginTop = '160px'
-  
-    
+
+
     const prevIcon = createSvg(40,40, true)
     // Adiciona o elemento 'path' ao elemento SVG
-  
+
 
     // Adiciona o elemento SVG ao elemento pai
     prevButton.appendChild(prevIcon)
@@ -182,7 +178,7 @@ function createCarouselControls() {
     prevLabel.className = 'visually-hidden'
     prevLabel.textContent = 'Previous'
     prevButton.appendChild(prevLabel)
-  
+
     const nextButton = document.createElement('button')
     nextButton.className = 'carousel-control-next'
     nextButton.type = 'button'
@@ -190,19 +186,19 @@ function createCarouselControls() {
     nextButton.dataset.bsSlide = 'next'
     nextButton.style.height = 'fit-content'
     nextButton.style.marginTop = '160px'
-    
+
     const nextIcon = createSvg(40,40)
     nextButton.appendChild(nextIcon)
-  
+
     const nextLabel = document.createElement('span')
     nextLabel.className = 'visually-hidden'
     nextLabel.textContent = 'Next'
     nextButton.appendChild(nextLabel)
-  
+
     return [prevButton, nextButton]
 }
 
-function initCarousel(cards){
+function createCarousel(cards){
 
     const divCarousel = createDivCarousel()
     const indicators = createCarouselIndicators(cards)
@@ -221,7 +217,7 @@ function initCarousel(cards){
     chagas.style.position = 'fixed'
     chagas.style.right = '10vw'
     chagas.style.bottom = '0'
-    
+
 
 
     const head = document.createElement('header')
@@ -233,15 +229,15 @@ function initCarousel(cards){
 function fixeStyles(querySelector) {
     const element = document.querySelector(querySelector)
     const computedStyles = getComputedStyle(element)
-    
+
     const stylesToCopy = Array.from(computedStyles).reduce((styles, prop) => {
         styles[prop] = computedStyles[prop]
         return styles
     }, {})
-    
+
     // Remova todas as classes do elemento
     element.className = ''
-    
+
     // Reaplique os estilos copiados
     Object.assign(element.style, stylesToCopy)
 }
@@ -262,7 +258,7 @@ function importBootstrapScript() {
 }
 function waitLoadYT() {
     if (document.readyState === 'complete') {
-        // Recursos carregados, execute o restante do código        
+        // Recursos carregados, execute o restante do código
         importBootstrapScript()
         main()
     } else {
@@ -277,7 +273,7 @@ function waitLoadYT() {
 
 function captureLinks(){
     let urlClear = url.replace(/.+watch\?v=/, '')
-    const links = {
+    links = {
         list: urlClear.replace(/.+list=/, ''),
         video: urlClear.replace(/list=.+/, ''),
         url: url
@@ -290,15 +286,15 @@ function captureTitle(){
     if (title){
         return title.innerText
     }
-    return 'nova lista'
+    return false
 }
-function saveCards (newCard){
+function saveCards (newCard = undefined, active = undefined){
     const cards = loadCards() || []
-    const active = cards.length
-    cards.push(newCard)
+    active = cards.length
+    if (newCard){cards.push(newCard)}
     localStorage.setItem('saveCards', JSON.stringify(cards))
     localStorage.setItem('active', JSON.stringify(active))
-    
+
 }
 function loadCards (){
     const cards = JSON.parse(localStorage.getItem('saveCards'))
@@ -308,9 +304,19 @@ function loadCards (){
     return cards
 }
 function captureImage() {
-    const img = document.querySelector('#thumbnail > yt-image > img')
-    if (img){
-        return img.src
+    try {
+        const indexs = Array.from(document.querySelectorAll('#index'))
+        const findSelected  = (index) => {
+            if(index.innerText === '▶'){
+                return true
+            }
+        }
+        const index = indexs.find(findSelected)
+        const pai = index.closest('ytd-playlist-panel-video-renderer')
+        const img = pai.querySelector('yt-image img')
+        return img.src || 'teste'
+    } catch (error) {
+        return undefined  
     }
 }
 function createNewCard(){
@@ -320,40 +326,50 @@ function createNewCard(){
     card.imgSrc = captureImage()
     saveCards(card)
 }
-function verifyList() {
+function verifySaveList() {
     const cards = loadCards()
     if (!cards){
-        return undefined
+        return false
     }
-    for (let index = 0; index < cards.length; index += 1){
-        if (cards[index].links.url === url){
-            return index
-        }
+    const cardIndex = cards.findIndex(card => (card.links.list === links.list))
+    if (cardIndex - 1){
+        createNewCard(url)
     }
+    return true
 }
 
+function initCarousel(cards){
+    const body = document.querySelector('body')
+    body.appendChild(createCarousel(cards))
+}
+const watching = () => (url.includes('watch'))
+const searching = () => (url.includes('results?search_query'))
+const watchingList = () => (url.includes('list='))
+
 function main() {
+    captureLinks()
     if (carouselActive){
-        return true
+        return undefined
     }
     const cards = loadCards()
-    if (!url.includes('watch')){
-        if (cards){
-            const body = document.querySelector('body')
-            body.appendChild(initCarousel(cards))
-            return 'init youtube lists'
-        }
+    if (cards && !watching() && !searching() && !carouselActive){
+        initCarousel(cards)
     }
-    if (url.includes('list=')){
-        const cardIndex = verifyList()
-        if (!Number.isInteger(cardIndex)) {
-            createNewCard()
-        }
+    if (watchingList() && !verifySaveList()){
+        createNewCard(url)
     }
+}
+function wait() {
+    if (times <= 10){
+        return  new Promise(resolve => {
+            setTimeout(resolve, 1000)
+        })}
+    return false
 }
 function init() {
     window.requestAnimationFrame(waitLoadYT)
 }
 init()
-window.addEventListener('popstate', main)
+
+  
   
