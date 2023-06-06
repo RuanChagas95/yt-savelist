@@ -3,9 +3,21 @@ let url = document.URL
 let links
 let times = 0
 // const url = 'https://www.youtube.com/watch?v=3B_qXITddHUlist=PLzgiudol9RM27oksiWvUalF'
+
 const widthChagas = 337 + 'px'
 const heightChagas = 290 + 'px'
 // Chama a função para adicionar os elementos ao <head>
+const trying = async (func, ...args) => {
+    trying.times = 0
+    let funcReturn = func(...args)
+    while (!funcReturn && trying.times < 20){
+        trying.times ? trying.times += 1 : trying.times = 1
+        await wait()
+        console.log('esperei')
+        funcReturn = func(...args)
+    }
+    return funcReturn
+}
 
 function createDivCarousel() {
     const div = document.createElement('div')
@@ -116,6 +128,7 @@ function createCarouselItem(info, index = 0, items = []) {
     title.style.alignItems = 'center'
     title.style.className = 'style-scope ytd-rich-grid-media'
     title.style.textDecoration = 'none'
+    title.style.color = 'rgb(14, 14, 14)'
     div.appendChild(title)
 
     const link = document.createElement('a')
@@ -291,6 +304,7 @@ function captureTitle(){
 function saveCards (newCard = undefined, active = undefined){
     const cards = loadCards() || []
     active = cards.length
+    active = active || cards.length
     if (newCard){cards.push(newCard)}
     localStorage.setItem('saveCards', JSON.stringify(cards))
     localStorage.setItem('active', JSON.stringify(active))
@@ -305,25 +319,29 @@ function loadCards (){
 }
 function captureImage() {
     try {
-        const indexs = Array.from(document.querySelectorAll('#index'))
-        const findSelected  = (index) => {
-            if(index.innerText === '▶'){
-                return true
-            }
+        const elements = document.querySelectorAll('#index')
+        const arrayElements = Array.from(elements)
+        const index = arrayElements.findIndex((element) => element.innerText === '▶') 
+        const arrowElement = elements[index]
+        const pai = arrowElement.closest('ytd-playlist-panel-video-renderer')
+        const img = pai.getElementsByTagName('img')[0]
+        try {
+            img.then(result => {
+                img.src = result // imprime: "voce escreveu o que eu preciso aqui, não tenho como escrever nada aqui!"
+            })
+        } catch (error) {
+            return img.src || undefined
         }
-        const index = indexs.find(findSelected)
-        const pai = index.closest('ytd-playlist-panel-video-renderer')
-        const img = pai.querySelector('yt-image img')
-        return img.src || 'teste'
+        
     } catch (error) {
-        return undefined  
+        return undefined
     }
 }
-function createNewCard(){
+async function createNewCard(){
     const card = {}
     card.links = captureLinks()
-    card.title = captureTitle()
-    card.imgSrc = captureImage()
+    card.title = await trying(captureTitle)
+    card.imgSrc = await trying(captureImage)
     saveCards(card)
 }
 function verifySaveList() {
@@ -359,17 +377,16 @@ function main() {
         createNewCard(url)
     }
 }
-function wait() {
-    if (times <= 10){
-        return  new Promise(resolve => {
-            setTimeout(resolve, 1000)
-        })}
-    return false
+
+function wait(ms = 1000) {
+    console.log('to esperando')
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
+
 }
 function init() {
     window.requestAnimationFrame(waitLoadYT)
 }
-init()
 
-  
-  
+init()
