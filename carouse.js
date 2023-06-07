@@ -1,6 +1,6 @@
 const url = () => document.URL
 let links
-// const url = () => 'https://www.youtube.com/watch?v=3B_qXITddHUlist=27ossdsdiWUalF'
+//const url = () => 'https://www.youtube.com/watch?v=3B_qXITddHUlist=27ossdsdiWUalF'
 
 const widthChagas = 337 + 'px'
 const heightChagas = 290 + 'px'
@@ -12,6 +12,8 @@ const trying = async (func, ...args) => {
         trying.times ? trying.times += 1 : trying.times = 1
         await wait()
         funcReturn = func(...args)
+        funcReturn = funcReturn instanceof Promise ? undefined : funcReturn
+
     }
     return funcReturn
 }
@@ -87,7 +89,7 @@ function createCarouselItem(info, index = 0, items = []) {
     // if (invertedColorElement){
     //     try {
     //         // color = getComputedStyle(invertedColorElement).style.backgroundColor === 'rgb(241, 241, 241)' ? '#272727' : '#f2f2f2'
-            
+
     //     } catch (error) {
     //         console.log(invertedColorElement)
     //         setTimeout(main, 2000)
@@ -327,7 +329,7 @@ function captureImage() {
     try {
         const elements = document.querySelectorAll('#index')
         const arrayElements = Array.from(elements)
-        const index = arrayElements.findIndex((element) => element.innerText === '▶') 
+        const index = arrayElements.findIndex((element) => element.innerText === '▶')
         const arrowElement = elements[index]
         const pai = arrowElement.closest('ytd-playlist-panel-video-renderer')
         const img = pai.getElementsByTagName('img')[0]
@@ -338,7 +340,7 @@ function captureImage() {
         } catch (error) {
             return img.src || undefined
         }
-        
+
     } catch (error) {
         return undefined
     }
@@ -347,7 +349,7 @@ async function createNewCard(){
     const links = captureLinks()
     const title = await trying(captureTitle) || 'Nova PlayList'
     const card = {}
-    if (title && links.video && links.list && links.url){
+    if (title && links.video && links.list){
         card.links = links
         card.title = title
         card.imgSrc = await trying(captureImage)
@@ -356,16 +358,19 @@ async function createNewCard(){
 }
 function verifySaveList() {
     const cards = loadCards()
-  
+    console.log(cards)
     if (!cards) {
         return false
     }
-  
-    const card = cards.find(card => card.links.list === captureLinks().list)
+    if (cards === null) {
+        return false
+    }
+
+    const card = cards.find(card => url().includes(card.links.list))
     if (card && 'list' in card.links) {
         return true
     }
-    return false  
+    return false
 }
 
 function initCarousel(cards){
@@ -381,23 +386,24 @@ function main() {
     const chagas = document.querySelector('#Chagas')
     if (chagas){
         if (watching() || searching()){
-            chagas.parentNode.removeChild(chagas)            
+            chagas.parentNode.removeChild(chagas)
         }
-        return setTimeout(main, 500)
+        return 'close lists'
     }
     const cards = loadCards()
     if (cards && !watching() && !searching() && !chagas){
         initCarousel(cards)
     }
-    
+    if (searching()){
+        return 'searching'
+    }
     if (watchingList() && !verifySaveList()){
         console.log('criando card')
         createNewCard(url())
-        return setTimeout(main, 500)
+        return 'create card'
     } 
     console.log(url())
     return setTimeout(main, 500)
-    
 }
 
 function wait(ms = 100) {
@@ -409,5 +415,5 @@ function wait(ms = 100) {
 function init() {
     window.requestAnimationFrame(waitLoadYT)
 }
-
+window.addEventListener('popstate', init)
 init()
