@@ -1,8 +1,6 @@
-let carouselActive = false
-let url = document.URL
+const url = () => document.URL
 let links
-let times = 0
-// const url = 'https://www.youtube.com/watch?v=3B_qXITddHUlist=PLzgiudol9RM27oksiWvUalF'
+// const url = () => 'https://www.youtube.com/watch?v=3B_qXITddHUlist=27ossdsdiWUalF'
 
 const widthChagas = 337 + 'px'
 const heightChagas = 290 + 'px'
@@ -13,7 +11,6 @@ const trying = async (func, ...args) => {
     while (!funcReturn && trying.times < 20){
         trying.times ? trying.times += 1 : trying.times = 1
         await wait()
-        console.log('esperei')
         funcReturn = func(...args)
     }
     return funcReturn
@@ -76,7 +73,7 @@ function createCarouselItem(info, index = 0, items = []) {
     const maxRepeat = info.length - 1
 
     const element = document.createElement('div')
-    element.setAttribute('data-bs-interval', 3000)
+    element.setAttribute('data-bs-interval', 2000)
     element.className = info.active === index ? 'active' : ''
     element.classList.add('carousel-item')
     element.focusable = false
@@ -85,13 +82,22 @@ function createCarouselItem(info, index = 0, items = []) {
 
     const div = document.createElement('div')
     element.appendChild(div)
-    const invertedColorElement = document.querySelector('yt-chip-cloud-chip-renderer')
+    // const invertedColorElement = document.querySelector('yt-chip-cloud-chip-renderer')
     let color
-    if (invertedColorElement){
-        color = getComputedStyle(invertedColorElement).style.backgroundColor === 'rgb(241, 241, 241)' ? '#272727' : '#f2f2f2'
-    } else {
-        color = '#f2f2f2'
-    }
+    // if (invertedColorElement){
+    //     try {
+    //         // color = getComputedStyle(invertedColorElement).style.backgroundColor === 'rgb(241, 241, 241)' ? '#272727' : '#f2f2f2'
+            
+    //     } catch (error) {
+    //         console.log(invertedColorElement)
+    //         setTimeout(main, 2000)
+    //     }
+    // color = getComputedStyle(invertedColorElement).style.backgroundColor === 'rgb(241, 241, 241)' ? '#272727' : '#f2f2f2'
+    // } else {
+    //     color = '#f2f2f2'
+    // }
+    color = '#f2f2f2'
+
     div.style.backgroundColor = color
     div.style.display = 'flex'
     div.style.width = widthChagas
@@ -285,7 +291,7 @@ function waitLoadYT() {
 // const lists;
 
 function captureLinks(){
-    let urlClear = url.replace(/.+watch\?v=/, '')
+    let urlClear = url().replace(/.+watch\?v=/, '')
     links = {
         list: urlClear.replace(/.+list=/, ''),
         video: urlClear.replace(/list=.+/, ''),
@@ -338,48 +344,63 @@ function captureImage() {
     }
 }
 async function createNewCard(){
+    const links = captureLinks()
+    const title = await trying(captureTitle) || 'Nova PlayList'
     const card = {}
-    card.links = captureLinks()
-    card.title = await trying(captureTitle)
-    card.imgSrc = await trying(captureImage)
-    saveCards(card)
+    if (title && links.video && links.list && links.url){
+        card.links = links
+        card.title = title
+        card.imgSrc = await trying(captureImage)
+        saveCards(card)
+    }
 }
 function verifySaveList() {
     const cards = loadCards()
-    if (!cards){
+  
+    if (!cards) {
         return false
     }
-    const cardIndex = cards.findIndex(card => (card.links.list === links.list))
-    if (cardIndex - 1){
-        createNewCard(url)
+  
+    const card = cards.find(card => card.links.list === captureLinks().list)
+    if (card && 'list' in card.links) {
+        return true
     }
-    return true
+    return false  
 }
 
 function initCarousel(cards){
     const body = document.querySelector('body')
     body.appendChild(createCarousel(cards))
 }
-const watching = () => (url.includes('watch'))
-const searching = () => (url.includes('results?search_query'))
-const watchingList = () => (url.includes('list='))
+const watching = () => (url().includes('watch'))
+const searching = () => (url().includes('results?search_query'))
+const watchingList = () => (url().includes('list='))
 
 function main() {
     captureLinks()
-    if (carouselActive){
-        return undefined
+    const chagas = document.querySelector('#Chagas')
+    if (chagas){
+        if (watching() || searching()){
+            chagas.parentNode.removeChild(chagas)            
+        }
+        return setTimeout(main, 500)
     }
     const cards = loadCards()
-    if (cards && !watching() && !searching() && !carouselActive){
+    if (cards && !watching() && !searching() && !chagas){
         initCarousel(cards)
     }
+    
     if (watchingList() && !verifySaveList()){
-        createNewCard(url)
-    }
+        console.log('criando card')
+        createNewCard(url())
+        return setTimeout(main, 500)
+    } 
+    console.log(url())
+    return setTimeout(main, 500)
+    
 }
 
-function wait(ms = 1000) {
-    console.log('to esperando')
+function wait(ms = 100) {
     return new Promise(resolve => {
         setTimeout(resolve, ms)
     })
